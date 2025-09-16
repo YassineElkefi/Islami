@@ -28,7 +28,32 @@ class PrayerTimesViewModel: NSObject, ObservableObject {
     private func setupLocationManager() {
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.requestWhenInUseAuthorization()
+        
+        // Check current authorization status
+        switch locationManager.authorizationStatus {
+        case .authorizedWhenInUse, .authorizedAlways:
+            // Already authorized, request location immediately
+            locationManager.requestLocation()
+        case .notDetermined:
+            // Request permission, location will be fetched in delegate method
+            locationManager.requestWhenInUseAuthorization()
+        case .denied, .restricted:
+            errorMessage = "Location access is required for prayer times"
+        @unknown default:
+            locationManager.requestWhenInUseAuthorization()
+        }
+    }
+    
+    // Add this delegate method to handle authorization changes
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        switch status {
+        case .authorizedWhenInUse, .authorizedAlways:
+            locationManager.requestLocation()
+        case .denied, .restricted:
+            errorMessage = "Location access is required for accurate prayer times"
+        default:
+            break
+        }
     }
     
     func requestLocation() {

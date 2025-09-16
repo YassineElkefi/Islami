@@ -33,13 +33,7 @@ struct ContentView: View {
             .tag(Tab.qibla)
             
             // Prayer Tab (center)
-            VStack {
-                Image(systemName: "clock")
-                    .font(.system(size: 60))
-                    .padding(.bottom, 8)
-                Text("Prayer")
-                    .font(.title)
-            }
+            PrayerTimesView()
             .tabItem {
                 Image(systemName: "clock")
                 Text("Prayer")

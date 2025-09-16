@@ -61,9 +61,11 @@ struct PrayerSettingsView: View {
             }
             .navigationTitle("Prayer Settings")
             .navigationBarTitleDisplayMode(.inline)
-            .navigationBarItems(
-                trailing: doneButton
-            )
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    doneButton
+                }
+            }
         }
         .onAppear {
             notificationViewModel.checkNotificationStatus()
@@ -72,7 +74,7 @@ struct PrayerSettingsView: View {
             }
             pulseAnimation = true
         }
-        .onChange(of: viewModel.selectedMethod) { _ in
+        .onChange(of: viewModel.selectedMethod) { oldValue, newValue in
             viewModel.refreshPrayerTimes()
         }
     }

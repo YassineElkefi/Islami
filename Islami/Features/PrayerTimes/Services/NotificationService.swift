@@ -50,7 +50,7 @@ class NotificationService{
             let content = UNMutableNotificationContent()
             content.title = "Prayer Time"
             content.body = "It's time for \(prayer.displayName) prayer"
-            content.sound = .default
+            content.sound = UNNotificationSound(named: UNNotificationSoundName("azan.mp3"))
             
             var dateComponents = DateComponents()
             dateComponents.hour = hour

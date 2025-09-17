@@ -13,7 +13,6 @@ struct PrayerTimesView: View {
     @State private var showSettings = false
     @State private var animateContent = false
     @State private var refreshRotation = 0.0
-
     var body: some View {
         NavigationView {
             ZStack {

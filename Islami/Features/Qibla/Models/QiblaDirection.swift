@@ -8,7 +8,7 @@
 import Foundation
 import CoreLocation
 
-struct QiblaDirection {
+struct QiblaDirection: Equatable {
     let bearing: Double
     let distance: Double
     let userLocation: CLLocation

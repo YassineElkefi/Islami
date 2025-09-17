@@ -122,8 +122,8 @@ struct QiblaInstructionsView: View {
 
 struct Instruction {
     let icon: String
-    let title: String
-    let description: String
+    let title: LocalizedStringKey
+    let description: LocalizedStringKey
     let color: Color
 }
 
@@ -180,7 +180,7 @@ struct InstructionCard: View {
 }
 
 struct TipRow: View {
-    let text: String
+    let text: LocalizedStringKey
     
     var body: some View {
         HStack(alignment: .top, spacing: 12) {

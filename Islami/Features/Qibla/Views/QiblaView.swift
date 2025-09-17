@@ -13,7 +13,7 @@ struct QiblaView: View {
     @State private var showInstructions = false
     
     var body: some View {
-        NavigationView {
+        NavigationStack{
             ZStack {
                 // Background gradient
                 LinearGradient(
@@ -57,9 +57,12 @@ struct QiblaView: View {
                 .animation(.easeInOut(duration: 0.8), value: viewModel.isLoading)
                 .animation(.easeInOut(duration: 0.8), value: viewModel.qiblaDirection)
             }
-            .navigationTitle("Qibla Compass")
+            .navigationTitle("qibla_compass")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading){
+                    LanguageSelector()
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         showInstructions.toggle()
@@ -74,11 +77,11 @@ struct QiblaView: View {
             .sheet(isPresented: $showInstructions) {
                 NavigationView {
                     QiblaInstructionsView()
-                        .navigationTitle("Instructions")
+                        .navigationTitle("instructions")
                         .navigationBarTitleDisplayMode(.inline)
                         .toolbar {
                             ToolbarItem(placement: .navigationBarTrailing) {
-                                Button("Done") {
+                                Button("done") {
                                     showInstructions = false
                                 }
                                 .fontWeight(.medium)
@@ -88,6 +91,7 @@ struct QiblaView: View {
                 .presentationDetents([.medium, .large])
             }
         }
+        .id(LocalizationManager.shared.currentLanguage)
         .onAppear {
             if viewModel.permissionStatus == .authorizedWhenInUse || viewModel.permissionStatus == .authorizedAlways {
                 viewModel.getCurrentLocation()

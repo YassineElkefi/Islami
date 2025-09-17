@@ -16,7 +16,7 @@ struct SplashScreen: View {
     @State private var textOpacity = 0.0
     @State private var backgroundOpacity = 1.0
     @State private var crescentRotation = 0.0
-    
+
     var body: some View {
         if isActive {
             ContentView()

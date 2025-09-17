@@ -1,30 +1,23 @@
-//
-//  LanguageSelector.swift
-//  Islami
-//
-//  Created by Yassine EL KEFI on 17/9/2025.
-//
 import SwiftUI
 
 struct LanguageSelector: View {
-    @ObservedObject private var localizationManager = LocalizationManager.shared
-    @State private var isShowingMenu = false
+    @StateObject private var localizationManager = LocalizationManager.shared
     
     var body: some View {
         Menu {
             ForEach(LocalizationManager.Language.allCases, id: \.self) { language in
-                Button(action: {
-                    withAnimation(.easeInOut(duration: 0.3)) {
+                Button {
+                    withAnimation {
                         localizationManager.setLanguage(language)
                     }
-                }) {
+                } label: {
                     HStack {
                         Text(language.flag)
                         Text(language.displayName)
-                        Spacer()
                         if language == localizationManager.currentLanguage {
+                            Spacer()
                             Image(systemName: "checkmark")
-                                .foregroundColor(.blue)
+                                .foregroundStyle(.blue)
                         }
                     }
                 }
@@ -35,17 +28,9 @@ struct LanguageSelector: View {
                     .font(.title2)
                 Text(localizationManager.currentLanguage.displayName)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
             }
         }
-        .environment(\.layoutDirection, localizationManager.currentLanguage.isRTL ? .rightToLeft : .leftToRight)
-    }
-}
-
-struct LanguageSelector_Previews: PreviewProvider {
-    static var previews: some View {
-        LanguageSelector()
-            .previewLayout(.sizeThatFits)
-            .padding()
+        .menuOrder(.fixed)
     }
 }

@@ -7,228 +7,140 @@
 
 import SwiftUI
 
+import SwiftUI
+
 struct NextPrayerView: View {
     let nextPrayer: Prayer
     let timeUntilNext: String
     let nextPrayerTime: String
     let isLoading: Bool
-    
+
     @State private var pulseAnimation = false
     @State private var fadeIn = false
     @Environment(\.colorScheme) var colorScheme
-    
+
     var body: some View {
         VStack(spacing: 16) {
-            // Animated header with gradient text
+            // Simplified header
             HStack {
                 Text("Next Prayer")
                     .font(.title2)
                     .fontWeight(.semibold)
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [.blue, .purple],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                
+                    .foregroundColor(.primary)
+
                 Spacer()
-                
-                // Animated pulse indicator
+
+                // Simplified pulse indicator
                 Circle()
                     .fill(.blue)
                     .frame(width: 8, height: 8)
-                    .scaleEffect(pulseAnimation ? 1.5 : 1.0)
                     .opacity(pulseAnimation ? 0.3 : 1.0)
-                    .animation(.easeInOut(duration: 1.0).repeatForever(), value: pulseAnimation)
             }
-            
-            // Show loading if no prayer times are available yet or explicitly loading
-                    if isLoading || timeUntilNext == "00:00:00" {
-                        loadingView
-                    } else {
-                        prayerInfoView
-                    }
+
+            if isLoading || timeUntilNext == "00:00:00" {
+                loadingView
+            } else {
+                prayerInfoView
+            }
         }
         .padding(20)
         .frame(maxWidth: .infinity)
-        .background(backgroundView)
+        .background(simplifiedBackground)
         .clipShape(RoundedRectangle(cornerRadius: 20))
-        .overlay(borderOverlay)
+        .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 4)
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(Color.blue.opacity(0.1), lineWidth: 1)
+        )
         .opacity(fadeIn ? 1.0 : 0.0)
-        .offset(y: fadeIn ? 0 : 20)
         .onAppear {
-            withAnimation(.spring(response: 0.8, dampingFraction: 0.8)) {
+            withAnimation(.easeInOut(duration: 0.5)) {
                 fadeIn = true
             }
-            pulseAnimation = true
+            withAnimation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true)) {
+                pulseAnimation = true
+            }
         }
     }
-    
+
     private var loadingView: some View {
         VStack(spacing: 16) {
-            // Animated loading spinner with gradient
-            ZStack {
-                Circle()
-                    .stroke(Color.blue.opacity(0.2), lineWidth: 4)
-                    .frame(width: 50, height: 50)
-                
-                Circle()
-                    .trim(from: 0, to: 0.7)
-                    .stroke(
-                        LinearGradient(colors: [.blue, .purple], startPoint: .topLeading, endPoint: .bottomTrailing),
-                        style: StrokeStyle(lineWidth: 4, lineCap: .round)
-                    )
-                    .frame(width: 50, height: 50)
-                    .rotationEffect(.degrees(pulseAnimation ? 360 : 0))
-                    .animation(.linear(duration: 1.0).repeatForever(autoreverses: false), value: pulseAnimation)
-            }
-            
+            ProgressView()
+                .scaleEffect(1.2)
+                .tint(.blue)
+
             Text("Loading prayer times...")
                 .font(.subheadline)
                 .fontWeight(.medium)
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [.blue, .purple],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
-                .opacity(pulseAnimation ? 0.6 : 1.0)
-                .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: pulseAnimation)
+                .foregroundColor(.secondary)
         }
         .frame(height: 120)
     }
-    
+
     private var prayerInfoView: some View {
         HStack(spacing: 24) {
-            // Prayer icon with animated background
+            // Simplified prayer icon
             ZStack {
                 Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [.blue.opacity(0.2), .purple.opacity(0.1)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
+                    .fill(Color.blue.opacity(0.1))
                     .frame(width: 70, height: 70)
-                    .scaleEffect(pulseAnimation ? 1.05 : 1.0)
-                    .animation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true), value: pulseAnimation)
-                
+                    .shadow(color: Color.blue.opacity(0.2), radius: 4, x: 0, y: 2)
+
                 Image(systemName: nextPrayer.iconName)
                     .font(.system(size: 32, weight: .medium))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [.blue, .purple],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
+                    .foregroundColor(.blue)
             }
-            
-            // Prayer details
+
             VStack(alignment: .leading, spacing: 6) {
                 Text(nextPrayer.displayName)
                     .font(.title3)
                     .fontWeight(.bold)
                     .foregroundColor(.primary)
-                
+
                 Text(formatTime(nextPrayerTime))
                     .font(.callout)
                     .fontWeight(.medium)
                     .foregroundColor(.secondary)
             }
-            
+
             Spacer()
-            
-            // Countdown with animated background
+
             VStack(alignment: .trailing, spacing: 6) {
                 Text("Time left")
                     .font(.caption)
                     .fontWeight(.medium)
                     .foregroundColor(.secondary)
-                
-                ZStack {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(
-                            LinearGradient(
-                                colors: [.blue.opacity(0.1), .purple.opacity(0.05)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .frame(height: 35)
-                    
-                    Text(timeUntilNext)
-                        .font(.title3)
-                        .fontWeight(.bold)
-                        .monospacedDigit()
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [.blue, .purple],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                }
-                .scaleEffect(pulseAnimation ? 1.02 : 1.0)
-                .animation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: pulseAnimation)
+
+                Text(timeUntilNext)
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .monospacedDigit()
+                    .foregroundColor(.blue)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.blue.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.blue.opacity(0.2), lineWidth: 1)
+                    )
             }
         }
     }
-    
-    private var backgroundView: some View {
-        ZStack {
-            // Main gradient background - adaptive for dark mode
-            LinearGradient(
-                colors: [
-                    Color.blue.opacity(colorScheme == .dark ? 0.15 : 0.1),
-                    Color.purple.opacity(colorScheme == .dark ? 0.08 : 0.05),
-                    Color.blue.opacity(colorScheme == .dark ? 0.12 : 0.08)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
+
+    private var simplifiedBackground: some View {
+        RoundedRectangle(cornerRadius: 20)
+            .fill(
+                colorScheme == .dark ?
+                Color(.systemGray6) :
+                Color(.systemBackground)
             )
-            
-            // Animated light overlay
-            RoundedRectangle(cornerRadius: 20)
-                .fill(
-                    RadialGradient(
-                        colors: [
-                            Color.primary.opacity(colorScheme == .dark ? 0.05 : 0.1),
-                            Color.clear
-                        ],
-                        center: .topLeading,
-                        startRadius: 0,
-                        endRadius: 200
-                    )
-                )
-                .opacity(pulseAnimation ? 0.5 : 0.3)
-                .animation(.easeInOut(duration: 3.0).repeatForever(autoreverses: true), value: pulseAnimation)
-        }
     }
 
-    private var borderOverlay: some View {
-        RoundedRectangle(cornerRadius: 20)
-            .stroke(
-                LinearGradient(
-                    colors: [
-                        Color.blue.opacity(colorScheme == .dark ? 0.4 : 0.3),
-                        Color.purple.opacity(colorScheme == .dark ? 0.3 : 0.2),
-                        Color.blue.opacity(colorScheme == .dark ? 0.15 : 0.1)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                ),
-                lineWidth: 1.5
-            )
-    }
-    
     private func formatTime(_ time: String) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
-        
+
         if let date = formatter.date(from: time) {
             formatter.dateFormat = "h:mm a"
             return formatter.string(from: date)

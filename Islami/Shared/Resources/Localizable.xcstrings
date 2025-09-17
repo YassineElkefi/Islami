@@ -86,6 +86,7 @@
       }
     },
     "Allow location access for accurate Qibla direction calculation" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -114,6 +115,7 @@
       }
     },
     "Calibration" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -141,7 +143,11 @@
         }
       }
     },
+    "Customize your prayer experience" : {
+
+    },
     "Customize Your Prayer Experience" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -198,6 +204,7 @@
       }
     },
     "Device Position" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -422,6 +429,7 @@
       }
     },
     "For best accuracy, use outdoors or near windows" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -534,6 +542,7 @@
       }
     },
     "Hold your device flat and horizontally for best compass reading" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -674,6 +683,7 @@
       }
     },
     "Keep your device away from magnetic objects like speakers or metal" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -730,6 +740,7 @@
       }
     },
     "Location Access" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -786,6 +797,7 @@
       }
     },
     "Move your device in a figure-8 pattern to calibrate the compass" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -1093,7 +1105,11 @@
         }
       }
     },
+    "Prayer times are calculated using the Aladhan API based on your location and selected calculation method." : {
+
+    },
     "Prayer times are provided by the Aladhan API, which calculates accurate prayer times based on your location and selected calculation method." : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -1317,7 +1333,11 @@
         }
       }
     },
+    "Settings" : {
+
+    },
     "The compass needs a few seconds to stabilize" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -1346,6 +1366,7 @@
       }
     },
     "The Kaaba icon points towards the Qibla direction" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {

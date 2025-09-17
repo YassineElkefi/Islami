@@ -37,7 +37,7 @@ struct PrayerData: Codable {
     let date: PrayerDate
 }
 
-struct PrayerTimings: Codable {
+struct PrayerTimings: Codable, Equatable {
     let fajr: String
     let dhuhr: String
     let asr: String

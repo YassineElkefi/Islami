@@ -13,54 +13,50 @@ struct PrayerSettingsView: View {
     @Environment(\.presentationMode) var presentationMode
     
     @State private var animateContent = false
-    @State private var pulseAnimation = false
-    @State private var rotationAnimation = 0.0
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         NavigationView {
-            ZStack {
-                // Animated background
-                backgroundGradient
-                
-                ScrollView {
-                    VStack(spacing: 24) {
-                        // Header section
-                        headerSection
-                            .opacity(animateContent ? 1.0 : 0.0)
-                            .offset(y: animateContent ? 0 : -30)
-                            .animation(.spring(response: 0.8, dampingFraction: 0.8).delay(0.1), value: animateContent)
-                        
-                        // Calculation Method Section
-                        calculationMethodSection
-                            .opacity(animateContent ? 1.0 : 0.0)
-                            .offset(x: animateContent ? 0 : -50)
-                            .animation(.spring(response: 0.8, dampingFraction: 0.8).delay(0.2), value: animateContent)
-                        
-                        // Notifications Section
-                        notificationsSection
-                            .opacity(animateContent ? 1.0 : 0.0)
-                            .offset(x: animateContent ? 0 : 50)
-                            .animation(.spring(response: 0.8, dampingFraction: 0.8).delay(0.3), value: animateContent)
-                        
-                        // Actions Section
-                        actionsSection
-                            .opacity(animateContent ? 1.0 : 0.0)
-                            .offset(y: animateContent ? 0 : 30)
-                            .animation(.spring(response: 0.8, dampingFraction: 0.8).delay(0.4), value: animateContent)
-                        
-                        // About Section
-                        aboutSection
-                            .opacity(animateContent ? 1.0 : 0.0)
-                            .offset(y: animateContent ? 0 : 40)
-                            .animation(.spring(response: 0.8, dampingFraction: 0.8).delay(0.5), value: animateContent)
-                        
-                        Spacer(minLength: 50)
-                    }
-                    .padding()
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Header section
+                    headerSection
+                        .opacity(animateContent ? 1.0 : 0.0)
+                        .offset(y: animateContent ? 0 : -20)
+                        .animation(.easeInOut(duration: 0.6).delay(0.1), value: animateContent)
+                    
+                    // Calculation Method Section
+                    calculationMethodSection
+                        .opacity(animateContent ? 1.0 : 0.0)
+                        .offset(x: animateContent ? 0 : -30)
+                        .animation(.easeInOut(duration: 0.6).delay(0.2), value: animateContent)
+                    
+                    // Notifications Section
+                    notificationsSection
+                        .opacity(animateContent ? 1.0 : 0.0)
+                        .offset(x: animateContent ? 0 : 30)
+                        .animation(.easeInOut(duration: 0.6).delay(0.3), value: animateContent)
+                    
+                    // Actions Section
+                    actionsSection
+                        .opacity(animateContent ? 1.0 : 0.0)
+                        .offset(y: animateContent ? 0 : 20)
+                        .animation(.easeInOut(duration: 0.6).delay(0.4), value: animateContent)
+                    
+                    // About Section
+                    aboutSection
+                        .opacity(animateContent ? 1.0 : 0.0)
+                        .offset(y: animateContent ? 0 : 30)
+                        .animation(.easeInOut(duration: 0.6).delay(0.5), value: animateContent)
+                    
+                    Spacer(minLength: 50)
                 }
+                .padding()
             }
-            .navigationTitle("Prayer Settings")
+            .background(
+                colorScheme == .dark ? Color(.systemBackground) : Color(.systemGray6).opacity(0.5)
+            )
+            .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -70,149 +66,54 @@ struct PrayerSettingsView: View {
         }
         .onAppear {
             notificationViewModel.checkNotificationStatus()
-            withAnimation(.spring(response: 0.8, dampingFraction: 0.8)) {
+            withAnimation(.easeInOut(duration: 0.5)) {
                 animateContent = true
             }
-            pulseAnimation = true
         }
         .onChange(of: viewModel.selectedMethod) { oldValue, newValue in
             viewModel.refreshPrayerTimes()
         }
     }
     
-    private var backgroundGradient: some View {
-        LinearGradient(
-            colors: [
-                Color(.systemBackground),
-                Color.blue.opacity(colorScheme == .dark ? 0.05 : 0.02),
-                Color.purple.opacity(colorScheme == .dark ? 0.03 : 0.01),
-                Color(.systemBackground)
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-        .ignoresSafeArea()
-        .opacity(animateContent ? 1.0 : 0.0)
-        .animation(.easeOut(duration: 1.0), value: animateContent)
-    }
-
-    private var cardBackground: some View {
-        ZStack {
-            LinearGradient(
-                colors: [
-                    colorScheme == .dark ? Color(.systemGray5) : Color(.systemGray6).opacity(0.8),
-                    colorScheme == .dark ? Color(.systemGray6) : Color(.systemGray5).opacity(0.3)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            
-            RoundedRectangle(cornerRadius: 16)
-                .fill(
-                    RadialGradient(
-                        colors: [
-                            Color.blue.opacity(colorScheme == .dark ? 0.1 : 0.05),
-                            Color.clear
-                        ],
-                        center: .topLeading,
-                        startRadius: 0,
-                        endRadius: 150
-                    )
-                )
-                .opacity(pulseAnimation ? 0.8 : 0.4)
-                .animation(.easeInOut(duration: 3.0).repeatForever(autoreverses: true), value: pulseAnimation)
-        }
-    }
-
-    private var cardBorder: some View {
-        RoundedRectangle(cornerRadius: 16)
-            .stroke(
-                LinearGradient(
-                    colors: [
-                        Color.blue.opacity(colorScheme == .dark ? 0.3 : 0.2),
-                        Color.purple.opacity(colorScheme == .dark ? 0.2 : 0.1)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                ),
-                lineWidth: 1.5
-            )
-    }
-    
-    /*private var backgroundGradient: some View {
-        LinearGradient(
-            colors: [
-                Color(.systemBackground),
-                Color.blue.opacity(0.02),
-                Color.purple.opacity(0.01),
-                Color(.systemBackground)
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-        .ignoresSafeArea()
-        .opacity(animateContent ? 1.0 : 0.0)
-        .animation(.easeOut(duration: 1.0), value: animateContent)
-    }*/
-    
     private var headerSection: some View {
         VStack(spacing: 12) {
             ZStack {
                 Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [.blue.opacity(0.2), .purple.opacity(0.1)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: 80, height: 80)
-                    .scaleEffect(pulseAnimation ? 1.05 : 1.0)
-                    .animation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true), value: pulseAnimation)
+                    .fill(Color.blue.opacity(0.1))
+                    .frame(width: 60, height: 60)
+                    .shadow(color: Color.blue.opacity(0.2), radius: 4, x: 0, y: 2)
                 
                 Image(systemName: "gearshape.fill")
-                    .font(.system(size: 36, weight: .medium))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [.blue, .purple],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .rotationEffect(.degrees(rotationAnimation))
-                    .animation(.easeInOut(duration: 3.0).repeatForever(autoreverses: true), value: pulseAnimation)
+                    .font(.system(size: 24, weight: .medium))
+                    .foregroundColor(.blue)
             }
             
-            Text("Customize Your Prayer Experience")
+            Text("Prayer Settings")
                 .font(.title2)
                 .fontWeight(.bold)
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [.blue, .purple],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
+                .foregroundColor(.primary)
+            
+            Text("Customize your prayer experience")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
         }
         .padding(20)
         .frame(maxWidth: .infinity)
         .background(cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 20))
-        .overlay(cardBorder)
-        .onAppear {
-            withAnimation(.linear(duration: 10.0).repeatForever(autoreverses: false)) {
-                rotationAnimation = 360
-            }
-        }
+        .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 3)
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(Color.blue.opacity(0.1), lineWidth: 1)
+        )
     }
     
     private var calculationMethodSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             sectionHeader(
                 icon: "compass.drawing",
-                title: "Calculation Method",
-                subtitle: "Choose the method for calculating prayer times"
+                title: "Calculation Method"
             )
             
             Picker("Method", selection: $viewModel.selectedMethod) {
@@ -235,15 +136,18 @@ struct PrayerSettingsView: View {
         .padding(20)
         .background(cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(cardBorder)
+        .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.gray.opacity(0.1), lineWidth: 1)
+        )
     }
     
     private var notificationsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             sectionHeader(
                 icon: "bell.fill",
-                title: "Notifications",
-                subtitle: "Manage prayer time notifications"
+                title: "Notifications"
             )
             
             VStack(alignment: .leading, spacing: 12) {
@@ -256,42 +160,46 @@ struct PrayerSettingsView: View {
                     
                     ZStack {
                         Circle()
-                            .fill(notificationViewModel.isNotificationEnabled ? .green.opacity(0.2) : .red.opacity(0.2))
-                            .frame(width: 40, height: 40)
-                            .scaleEffect(pulseAnimation ? 1.1 : 1.0)
-                            .animation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: pulseAnimation)
+                            .fill(notificationViewModel.isNotificationEnabled ? Color.green.opacity(0.1) : Color.red.opacity(0.1))
+                            .frame(width: 32, height: 32)
+                            .shadow(
+                                color: notificationViewModel.isNotificationEnabled ? Color.green.opacity(0.2) : Color.red.opacity(0.2),
+                                radius: 3, x: 0, y: 1
+                            )
                         
                         Image(systemName: notificationViewModel.isNotificationEnabled ? "checkmark.circle.fill" : "xmark.circle.fill")
                             .foregroundColor(notificationViewModel.isNotificationEnabled ? .green : .red)
-                            .font(.system(size: 20, weight: .semibold))
+                            .font(.system(size: 16, weight: .semibold))
                     }
                 }
                 
                 Text(notificationViewModel.notificationStatus)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                    .padding(.leading, 4)
                 
                 if !notificationViewModel.isNotificationEnabled {
                     Button("Enable Notifications") {
                         notificationViewModel.requestNotificationPermission()
                     }
-                    .buttonStyle(AnimatedButtonStyle(colors: [.green, .blue]))
+                    .buttonStyle(SimpleButtonStyle(color: .green))
                 }
             }
         }
         .padding(20)
         .background(cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(cardBorder)
+        .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.gray.opacity(0.1), lineWidth: 1)
+        )
     }
     
     private var actionsSection: some View {
         VStack(spacing: 16) {
             sectionHeader(
                 icon: "bolt.fill",
-                title: "Actions",
-                subtitle: "Quick actions and updates"
+                title: "Actions"
             )
             
             VStack(spacing: 12) {
@@ -299,28 +207,31 @@ struct PrayerSettingsView: View {
                     viewModel.refreshPrayerTimes()
                     presentationMode.wrappedValue.dismiss()
                 }
-                .buttonStyle(AnimatedButtonStyle(colors: [.blue, .purple]))
+                .buttonStyle(SimpleButtonStyle(color: .blue))
                 
                 if notificationViewModel.isNotificationEnabled, let timings = viewModel.prayerTimes {
                     Button("Update Notifications") {
                         notificationViewModel.schedulePrayerNotifications(timings: timings)
                     }
-                    .buttonStyle(AnimatedButtonStyle(colors: [.green, .teal]))
+                    .buttonStyle(SimpleButtonStyle(color: .green))
                 }
             }
         }
         .padding(20)
         .background(cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(cardBorder)
+        .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.gray.opacity(0.1), lineWidth: 1)
+        )
     }
     
     private var aboutSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             sectionHeader(
                 icon: "info.circle.fill",
-                title: "About",
-                subtitle: "Information about data sources"
+                title: "About"
             )
             
             VStack(alignment: .leading, spacing: 8) {
@@ -329,17 +240,20 @@ struct PrayerSettingsView: View {
                     .fontWeight(.semibold)
                     .foregroundColor(.primary)
                 
-                Text("Prayer times are provided by the Aladhan API, which calculates accurate prayer times based on your location and selected calculation method.")
+                Text("Prayer times are calculated using the Aladhan API based on your location and selected calculation method.")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                    .lineLimit(nil)
                     .multilineTextAlignment(.leading)
             }
         }
         .padding(20)
         .background(cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(cardBorder)
+        .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.gray.opacity(0.1), lineWidth: 1)
+        )
     }
     
     private var doneButton: some View {
@@ -348,109 +262,41 @@ struct PrayerSettingsView: View {
         }
         .font(.headline)
         .fontWeight(.semibold)
-        .foregroundStyle(
-            LinearGradient(
-                colors: [.blue, .purple],
-                startPoint: .leading,
-                endPoint: .trailing
-            )
-        )
-        .scaleEffect(pulseAnimation ? 1.05 : 1.0)
-        .animation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true), value: pulseAnimation)
+        .foregroundColor(.blue)
     }
     
-    private func sectionHeader(icon: String, title: String, subtitle: String) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 12) {
-                ZStack {
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [.blue.opacity(0.2), .purple.opacity(0.1)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .frame(width: 40, height: 40)
-                    
-                    Image(systemName: icon)
-                        .font(.system(size: 18, weight: .medium))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [.blue, .purple],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                }
+    private func sectionHeader(icon: String, title: String) -> some View {
+        HStack(spacing: 12) {
+            ZStack {
+                Circle()
+                    .fill(Color.blue.opacity(0.1))
+                    .frame(width: 32, height: 32)
                 
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(title)
-                        .font(.title3)
-                        .fontWeight(.bold)
-                        .foregroundColor(.primary)
-                    
-                    Text(subtitle)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                
-                Spacer()
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.blue)
             }
             
-            Rectangle()
-                .fill(
-                    LinearGradient(
-                        colors: [.blue.opacity(0.3), .purple.opacity(0.2)],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
-                .frame(height: 2)
-                .clipShape(RoundedRectangle(cornerRadius: 1))
-        }
-    }
-    
-    /*private var cardBackground: some View {
-        ZStack {
-            LinearGradient(
-                colors: [
-                    Color(.systemGray6).opacity(0.8),
-                    Color(.systemGray5).opacity(0.3)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            Text(title)
+                .font(.title3)
+                .fontWeight(.bold)
+                .foregroundColor(.primary)
             
-            RoundedRectangle(cornerRadius: 16)
-                .fill(
-                    RadialGradient(
-                        colors: [.blue.opacity(0.05), .clear],
-                        center: .topLeading,
-                        startRadius: 0,
-                        endRadius: 150
-                    )
-                )
-                .opacity(pulseAnimation ? 0.8 : 0.4)
-                .animation(.easeInOut(duration: 3.0).repeatForever(autoreverses: true), value: pulseAnimation)
+            Spacer()
         }
     }
     
-    private var cardBorder: some View {
+    private var cardBackground: some View {
         RoundedRectangle(cornerRadius: 16)
-            .stroke(
-                LinearGradient(
-                    colors: [.blue.opacity(0.2), .purple.opacity(0.1)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                ),
-                lineWidth: 1.5
+            .fill(
+                colorScheme == .dark ? Color(.systemGray6) : Color.white
             )
-    }*/
+    }
 }
 
-struct AnimatedButtonStyle: ButtonStyle {
-    let colors: [Color]
+// Simple button style matching the main UI
+struct SimpleButtonStyle: ButtonStyle {
+    let color: Color
     
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -459,19 +305,19 @@ struct AnimatedButtonStyle: ButtonStyle {
             .foregroundColor(.white)
             .frame(maxWidth: .infinity)
             .frame(height: 50)
-            .background(
-                LinearGradient(
-                    colors: colors,
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
+            .background(color)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .shadow(color: color.opacity(0.3), radius: 4, x: 0, y: 2)
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(color.opacity(0.2), lineWidth: 1)
             )
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .shadow(color: colors.first?.opacity(0.3) ?? .clear, radius: 8, x: 0, y: 4)
             .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
-            .animation(.spring(response: 0.4, dampingFraction: 0.6), value: configuration.isPressed)
+            .opacity(configuration.isPressed ? 0.8 : 1.0)
+            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: configuration.isPressed)
     }
 }
+
 
 struct PrayerSettingsView_Previews: PreviewProvider {
     static var previews: some View {

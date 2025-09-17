@@ -11,198 +11,109 @@ struct PrayerTimeCardView: View {
     let prayer: Prayer
     let time: String
     let isNext: Bool
-    
-    @State private var isAnimating = false
-    @State private var pulseEffect = false
+
+    @State private var cardOpacity = 0.0
     @Environment(\.colorScheme) var colorScheme
-    
+
     var body: some View {
         VStack(spacing: 12) {
-            // Prayer Icon with animated glow effect
+            // Simplified prayer icon
             ZStack {
                 Circle()
-                    .fill(gradientBackground)
+                    .fill(isNext ? Color.blue.opacity(0.2) : Color.gray.opacity(0.1))
                     .frame(width: 50, height: 50)
                     .shadow(
-                        color: isNext ? Color.blue.opacity(0.4) : Color.gray.opacity(0.2),
-                        radius: pulseEffect ? 15 : 8
+                        color: isNext ? Color.blue.opacity(0.3) : Color.gray.opacity(0.2),
+                        radius: 4,
+                        x: 0,
+                        y: 2
                     )
-                    .scaleEffect(pulseEffect ? 1.1 : 1.0)
-                
+
                 Image(systemName: prayer.iconName)
                     .font(.system(size: 22, weight: .semibold))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: isNext ? [.white, .blue.opacity(0.8)] : [.primary, .secondary],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .rotationEffect(.degrees(isAnimating ? 5 : -5))
+                    .foregroundColor(isNext ? .blue : .primary)
             }
-            
-            // Prayer Name
+
             Text(prayer.displayName)
                 .font(.system(size: 16, weight: .bold, design: .rounded))
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: isNext ? [.blue, .indigo] : [.primary, .secondary],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
-                .scaleEffect(isNext ? 1.1 : 1.0)
-            
-            // Time with stylized format
+                .foregroundColor(isNext ? .blue : .primary)
+
             Text(formattedTime)
                 .font(.system(size: 15, weight: .medium, design: .monospaced))
                 .foregroundColor(isNext ? .blue : .secondary)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
                 .background(
-                    Capsule()
+                    RoundedRectangle(cornerRadius: 8)
                         .fill(isNext ? Color.blue.opacity(0.1) : Color.gray.opacity(0.05))
-                        .stroke(
-                            isNext ? Color.blue.opacity(0.3) : Color.gray.opacity(0.2),
-                            lineWidth: 1
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(
+                                    isNext ? Color.blue.opacity(0.3) : Color.gray.opacity(0.2),
+                                    lineWidth: 1
+                                )
                         )
                 )
-            
-            // Next prayer indicator
+
             if isNext {
                 HStack(spacing: 4) {
                     Circle()
                         .fill(Color.green)
                         .frame(width: 6, height: 6)
-                        .scaleEffect(pulseEffect ? 1.3 : 1.0)
-                    
+
                     Text("Next")
                         .font(.caption2)
                         .fontWeight(.semibold)
                         .foregroundColor(.green)
                 }
-                .transition(.scale.combined(with: .opacity))
             }
         }
         .frame(maxWidth: .infinity)
         .frame(height: 140)
         .padding(.vertical, 16)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(cardBackground)
-                .shadow(
-                    color: isNext ? Color.blue.opacity(0.15) : Color.black.opacity(0.05),
-                    radius: isNext ? 12 : 6,
-                    x: 0,
-                    y: isNext ? 8 : 3
-                )
+        .background(cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .shadow(
+            color: Color.black.opacity(0.06),
+            radius: isNext ? 8 : 4,
+            x: 0,
+            y: isNext ? 4 : 2
         )
         .overlay(
             RoundedRectangle(cornerRadius: 20)
                 .stroke(
-                    LinearGradient(
-                        colors: isNext
-                            ? [Color.blue.opacity(0.4), Color.indigo.opacity(0.2)]
-                            : [Color.gray.opacity(0.1), Color.gray.opacity(0.05)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
-                    lineWidth: isNext ? 2 : 1
+                    isNext ? Color.blue.opacity(0.2) : Color.gray.opacity(0.1),
+                    lineWidth: 1
                 )
         )
-        .scaleEffect(isNext ? 1.02 : 1.0)
+        .opacity(cardOpacity)
         .onAppear {
-            startAnimations()
-        }
-        .onChange(of: isNext) { _ in
-            withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-                if isNext {
-                    startPulseAnimation()
-                }
+            withAnimation(.easeInOut(duration: 0.6)) {
+                cardOpacity = 1.0
             }
         }
     }
-    
-    private var cardBackground: LinearGradient {
-        if isNext {
-            return LinearGradient(
-                colors: [
-                    Color.blue.opacity(colorScheme == .dark ? 0.15 : 0.05),
-                    Color.indigo.opacity(colorScheme == .dark ? 0.08 : 0.02),
-                    colorScheme == .dark ? Color(.systemGray6) : Color.white
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
+
+    private var cardBackground: some View {
+        RoundedRectangle(cornerRadius: 20)
+            .fill(
+                isNext ?
+                Color.blue.opacity(0.05) :
+                (colorScheme == .dark ? Color(.systemGray6) : Color.white)
             )
-        } else {
-            return LinearGradient(
-                colors: [
-                    colorScheme == .dark ? Color(.systemGray6) : Color.white,
-                    Color.gray.opacity(colorScheme == .dark ? 0.05 : 0.02)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        }
     }
 
-    private var gradientBackground: LinearGradient {
-        if isNext {
-            return LinearGradient(
-                colors: [
-                    Color.blue.opacity(colorScheme == .dark ? 0.9 : 0.8),
-                    Color.indigo.opacity(colorScheme == .dark ? 0.8 : 0.6)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        } else {
-            return LinearGradient(
-                colors: [
-                    Color.gray.opacity(colorScheme == .dark ? 0.4 : 0.3),
-                    Color.gray.opacity(colorScheme == .dark ? 0.2 : 0.1)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        }
-    }
-    
     private var formattedTime: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
-        
+
         let cleanTime = time.components(separatedBy: " ").first ?? time
-        
+
         if let date = formatter.date(from: cleanTime) {
             formatter.dateFormat = "h:mm a"
             return formatter.string(from: date)
         }
         return cleanTime
-    }
-    
-    private func startAnimations() {
-        // Subtle continuous animation for icon
-        withAnimation(
-            .easeInOut(duration: 3.0)
-            .repeatForever(autoreverses: true)
-        ) {
-            isAnimating = true
-        }
-        
-        // Pulse effect for next prayer
-        if isNext {
-            startPulseAnimation()
-        }
-    }
-    
-    private func startPulseAnimation() {
-        withAnimation(
-            .easeInOut(duration: 1.5)
-            .repeatForever(autoreverses: true)
-        ) {
-            pulseEffect = true
-        }
     }
 }
 

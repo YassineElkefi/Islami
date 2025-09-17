@@ -13,13 +13,25 @@ enum Tab {
     case quran
 }
 
+struct LazyView<Content: View>: View {
+    let build: () -> Content
+    
+    init(_ build: @autoclosure @escaping () -> Content) {
+        self.build = build
+    }
+    
+    var body: Content {
+        build()
+    }
+}
+
 struct ContentView: View {
     @State private var selectedTab: Tab = .prayer
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            // Qibla Tab
-            QiblaView()
+            // Qibla Tab - only loads when selected
+            LazyView(QiblaView())
             .tabItem {
                 Image(systemName: "location.north.line")
                 Text("Qibla")
@@ -27,7 +39,7 @@ struct ContentView: View {
             .tag(Tab.qibla)
             
             // Prayer Tab (center)
-            PrayerTimesView()
+            LazyView(PrayerTimesView())
             .tabItem {
                 Image(systemName: "clock")
                 Text("Prayer")
@@ -35,13 +47,15 @@ struct ContentView: View {
             .tag(Tab.prayer)
             
             // Quran Tab
-            VStack {
-                Image(systemName: "book")
-                    .font(.system(size: 60))
-                    .padding(.bottom, 8)
-                Text("Quran")
-                    .font(.title)
-            }
+            LazyView(
+                VStack {
+                    Image(systemName: "book")
+                        .font(.system(size: 60))
+                        .padding(.bottom, 8)
+                    Text("Quran")
+                        .font(.title)
+                }
+            )
             .tabItem {
                 Image(systemName: "book")
                 Text("Quran")

@@ -19,13 +19,7 @@ struct ContentView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             // Qibla Tab
-            VStack {
-                Image(systemName: "location.north.line")
-                    .font(.system(size: 60))
-                    .padding(.bottom, 8)
-                Text("Qibla")
-                    .font(.title)
-            }
+            QiblaView()
             .tabItem {
                 Image(systemName: "location.north.line")
                 Text("Qibla")

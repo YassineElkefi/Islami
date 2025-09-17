@@ -1,21 +1,13 @@
-//
-//  LocalizationManager.swift
-//  Islami
-//
-//  Created by Yassine EL KEFI on 17/9/2025.
-//
-
 import Foundation
 import SwiftUI
 import Combine
 
-class LocalizationManager: ObservableObject {
+final class LocalizationManager: ObservableObject {
     static let shared = LocalizationManager()
     
     @Published var currentLanguage: Language = .english {
         didSet {
             saveLanguage()
-            objectWillChange.send()
         }
     }
     
@@ -44,7 +36,7 @@ class LocalizationManager: ObservableObject {
         }
         
         var isRTL: Bool {
-            return self == .arabic
+            self == .arabic
         }
     }
     
@@ -53,44 +45,17 @@ class LocalizationManager: ObservableObject {
     }
     
     func setLanguage(_ language: Language) {
+        guard language != currentLanguage else { return }
         currentLanguage = language
-        updateRTLLayout()
-    }
-    
-    private func updateRTLLayout() {
-        DispatchQueue.main.async {
-            let semanticAttribute: UISemanticContentAttribute = self.currentLanguage.isRTL ? .forceRightToLeft : .forceLeftToRight
-            UIView.appearance().semanticContentAttribute = semanticAttribute
-            
-            // Force immediate layout update
-            for scene in UIApplication.shared.connectedScenes {
-                if let windowScene = scene as? UIWindowScene {
-                    for window in windowScene.windows {
-                        self.updateViewHierarchy(window.rootViewController?.view)
-                    }
-                }
-            }
-        }
-    }
-    
-    private func updateViewHierarchy(_ view: UIView?) {
-        guard let view = view else { return }
-        view.semanticContentAttribute = currentLanguage.isRTL ? .forceRightToLeft : .forceLeftToRight
-        for subview in view.subviews {
-            updateViewHierarchy(subview)
-        }
-        view.setNeedsLayout()
-        view.layoutIfNeeded()
     }
     
     private func saveLanguage() {
         UserDefaults.standard.set(currentLanguage.rawValue, forKey: "AppLanguage")
-        UserDefaults.standard.synchronize()
     }
     
     private func loadSavedLanguage() {
-        if let savedLanguage = UserDefaults.standard.string(forKey: "AppLanguage"),
-           let language = Language(rawValue: savedLanguage) {
+        if let saved = UserDefaults.standard.string(forKey: "AppLanguage"),
+           let language = Language(rawValue: saved) {
             currentLanguage = language
         }
     }

@@ -13,7 +13,6 @@ struct CompassView: View {
     let qiblaDirection: QiblaDirection?
     @State private var isAligned = false
     @State private var lastAlignedState = false
-    @State private var pulseAnimation = false
 
     private var currentHeading: Double {
         compassService.heading?.magneticHeading ?? 0
@@ -39,158 +38,86 @@ struct CompassView: View {
 
     var body: some View {
         ZStack {
-            // Outer glow ring for alignment
+            // Simplified compass background
             Circle()
-                .stroke(
-                    LinearGradient(
-                        colors: isQiblaAligned ? [.green.opacity(0.6), .green.opacity(0.2)] : [.clear],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    ),
-                    lineWidth: 8
-                )
-                .frame(width: 280, height: 280)
-                .scaleEffect(pulseAnimation && isQiblaAligned ? 1.05 : 1.0)
-                .animation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: pulseAnimation && isQiblaAligned)
-
-            // Main compass background with gradient
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [
-                            Color(.systemBackground),
-                            Color(.systemGray6).opacity(0.3)
-                        ],
-                        center: .center,
-                        startRadius: 50,
-                        endRadius: 130
-                    )
-                )
+                .fill(Color(.systemBackground))
                 .frame(width: 260, height: 260)
-                .shadow(color: .black.opacity(0.1), radius: 15, x: 0, y: 5)
+                .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 2)
 
-            // Compass border
+            // Simple compass border
             Circle()
-                .stroke(
-                    LinearGradient(
-                        colors: [Color.blue.opacity(0.6), Color.cyan.opacity(0.4)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
-                    lineWidth: 3
-                )
+                .stroke(Color.blue.opacity(0.6), lineWidth: 2)
                 .frame(width: 260, height: 260)
 
-            // Compass markings with enhanced styling
-            ForEach(0..<360, id: \.self) { degree in
-                if degree % 30 == 0 {
-                    Rectangle()
-                        .fill(
-                            LinearGradient(
-                                colors: degree % 90 == 0 ? [.primary, .secondary] : [.secondary],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                        .frame(width: degree % 90 == 0 ? 3 : 2, height: degree % 90 == 0 ? 25 : 15)
-                        .offset(y: -120)
-                        .rotationEffect(.degrees(Double(degree) - currentHeading))
-                }
+            // Reduced compass markings - only major ones
+            ForEach(Array(stride(from: 0, to: 360, by: 30)), id: \.self) { degree in
+                Rectangle()
+                    .fill(degree % 90 == 0 ? Color.primary : Color.secondary)
+                    .frame(width: degree % 90 == 0 ? 3 : 2, height: degree % 90 == 0 ? 20 : 12)
+                    .offset(y: -120)
+                    .rotationEffect(.degrees(Double(degree) - currentHeading))
             }
 
-            // Cardinal directions with enhanced styling
+            // Simplified cardinal directions
             VStack {
                 Text("N")
-                    .font(.system(.title2, design: .rounded, weight: .bold))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [.red, .red.opacity(0.7)],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.red)
                 Spacer()
                 HStack {
                     Text("W")
-                        .font(.system(.headline, design: .rounded, weight: .semibold))
+                        .font(.headline)
                         .foregroundColor(.primary)
                     Spacer()
                     Text("E")
-                        .font(.system(.headline, design: .rounded, weight: .semibold))
+                        .font(.headline)
                         .foregroundColor(.primary)
                 }
                 Spacer()
                 Text("S")
-                    .font(.system(.headline, design: .rounded, weight: .semibold))
+                    .font(.headline)
                     .foregroundColor(.primary)
             }
             .frame(width: 200, height: 200)
             .rotationEffect(.degrees(-currentHeading))
 
-            // Qibla direction indicator with enhanced styling
+            // Simplified Qibla direction indicator
             if qiblaDirection != nil {
-                VStack(spacing: 4) {
+                VStack(spacing: 2) {
                     Text("🕋")
-                        .font(.system(size: 32))
-                        .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+                        .font(.system(size: 28))
                     
                     Text("QIBLA")
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .font(.system(size: 8, weight: .bold))
                         .foregroundColor(.green)
                 }
                 .offset(y: -95)
                 .rotationEffect(.degrees(qiblaAngle))
-                .scaleEffect(isQiblaAligned ? 1.2 : 1.0)
-                .animation(.spring(response: 0.4, dampingFraction: 0.6), value: isQiblaAligned)
+                .scaleEffect(isQiblaAligned ? 1.1 : 1.0)
             }
 
-            // North indicator with dynamic styling
-            VStack(spacing: 4) {
+            // Simplified north indicator
+            VStack(spacing: 2) {
                 Image(systemName: isQiblaAligned ? "checkmark.circle.fill" : "arrow.up.circle.fill")
-                    .font(.system(size: 24, weight: .semibold))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: isQiblaAligned ? [.green, .green.opacity(0.7)] : [.red, .red.opacity(0.7)],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-                    .shadow(color: .black.opacity(0.2), radius: 3, x: 0, y: 1)
+                    .font(.title2)
+                    .foregroundColor(isQiblaAligned ? .green : .red)
                 
                 Text("NORTH")
-                    .font(.system(size: 8, weight: .bold, design: .rounded))
+                    .font(.system(size: 8, weight: .bold))
                     .foregroundColor(isQiblaAligned ? .green : .red)
             }
             .offset(y: -95)
-            .scaleEffect(isQiblaAligned ? 1.3 : 1.0)
-            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isQiblaAligned)
 
-            // Center dot with enhanced design
-            ZStack {
-                Circle()
-                    .fill(
-                        RadialGradient(
-                            colors: [.blue, .blue.opacity(0.6)],
-                            center: .center,
-                            startRadius: 2,
-                            endRadius: 6
-                        )
-                    )
-                    .frame(width: 12, height: 12)
-                    .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
-                
-                Circle()
-                    .stroke(Color.white, lineWidth: 2)
-                    .frame(width: 12, height: 12)
-            }
+            // Simple center dot
+            Circle()
+                .fill(Color.blue)
+                .frame(width: 8, height: 8)
         }
         .onChange(of: isQiblaAligned) { newValue in
             if newValue && !lastAlignedState {
                 let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
                 impactFeedback.impactOccurred()
-                pulseAnimation = true
-            } else if !newValue {
-                pulseAnimation = false
             }
             lastAlignedState = newValue
             isAligned = newValue

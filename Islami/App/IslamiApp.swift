@@ -9,6 +9,7 @@ struct IslamiApp: App {
             SplashScreen()
                 .environmentObject(localizationManager)
                 .environment(\.locale, Locale(identifier: localizationManager.currentLanguage.rawValue))
+                .environment(\.layoutDirection, localizationManager.currentLanguage.isRTL ? .rightToLeft : .leftToRight)
         }
     }
 }

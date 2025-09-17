@@ -19,7 +19,7 @@ struct PrayerTimesView: View {
             ZStack {
                 // Animated background
                 backgroundGradient
-
+                
                 ScrollView {
                     VStack(spacing: 24) {
                         // Animated header section
@@ -27,7 +27,7 @@ struct PrayerTimesView: View {
                             .opacity(animateContent ? 1.0 : 0.0)
                             .offset(y: animateContent ? 0 : -20)
                             .animation(.spring(response: 0.8, dampingFraction: 0.8).delay(0.1), value: animateContent)
-
+                        
                         // Next Prayer Section
                         NextPrayerView(
                             nextPrayer: viewModel.nextPrayer,
@@ -38,19 +38,19 @@ struct PrayerTimesView: View {
                         .opacity(animateContent ? 1.0 : 0.0)
                         .offset(x: animateContent ? 0 : -50)
                         .animation(.spring(response: 0.8, dampingFraction: 0.8).delay(0.2), value: animateContent)
-
+                        
                         // Prayer Times Grid
                         prayerTimesGrid
                             .opacity(animateContent ? 1.0 : 0.0)
                             .offset(y: animateContent ? 0 : 30)
                             .animation(.spring(response: 0.8, dampingFraction: 0.8).delay(0.3), value: animateContent)
-
+                        
                         // Animated Refresh Button
                         refreshButton
                             .opacity(animateContent ? 1.0 : 0.0)
                             .offset(y: animateContent ? 0 : 40)
                             .animation(.spring(response: 0.8, dampingFraction: 0.8).delay(0.4), value: animateContent)
-
+                        
                         Spacer(minLength: 50)
                     }
                     .padding()
@@ -71,7 +71,7 @@ struct PrayerTimesView: View {
             }
         }
     }
-
+    
     private var backgroundGradient: some View {
         LinearGradient(
             colors: [
@@ -87,7 +87,7 @@ struct PrayerTimesView: View {
         .opacity(animateContent ? 1.0 : 0.0)
         .animation(.easeOut(duration: 1.2), value: animateContent)
     }
-
+    
     private var headerSection: some View {
         VStack(spacing: 12) {
             if !viewModel.hijriDate.isEmpty {
@@ -95,14 +95,10 @@ struct PrayerTimesView: View {
                     .font(.title2)
                     .fontWeight(.bold)
                     .foregroundStyle(
-                        LinearGradient(
-                            colors: [.blue, .purple],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
+                        .blue
                     )
             }
-
+            
             if !viewModel.gregorianDate.isEmpty {
                 Text(viewModel.gregorianDate)
                     .font(.callout)
@@ -125,7 +121,7 @@ struct PrayerTimesView: View {
                             endPoint: .bottomTrailing
                         )
                     )
-
+                
                 RoundedRectangle(cornerRadius: 16)
                     .fill(
                         RadialGradient(
@@ -157,7 +153,7 @@ struct PrayerTimesView: View {
                 )
         )
     }
-
+    
     private func loadingCard(index: Int) -> some View {
         RoundedRectangle(cornerRadius: 16)
             .fill(
@@ -194,25 +190,30 @@ struct PrayerTimesView: View {
             )
             .clipShape(RoundedRectangle(cornerRadius: 16))
     }
-
+    
     private var prayerTimesGrid: some View {
         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 20) {
             if let timings = viewModel.prayerTimes {
                 Group {
                     PrayerTimeCardView(prayer: .fajr, time: timings.fajr, isNext: viewModel.nextPrayer == .fajr)
-                        .transition(.asymmetric(insertion: .move(edge: .leading).combined(with: .opacity), removal: .opacity))
+                        .transition(.asymmetric(insertion: .opacity.combined(with: .scale(scale: 0.8)), removal: .opacity))
+                        .animation(.easeInOut(duration: 0.6).delay(0.1), value: viewModel.prayerTimes)
 
                     PrayerTimeCardView(prayer: .dhuhr, time: timings.dhuhr, isNext: viewModel.nextPrayer == .dhuhr)
-                        .transition(.asymmetric(insertion: .move(edge: .trailing).combined(with: .opacity), removal: .opacity))
+                        .transition(.asymmetric(insertion: .opacity.combined(with: .scale(scale: 0.8)), removal: .opacity))
+                        .animation(.easeInOut(duration: 0.6).delay(0.2), value: viewModel.prayerTimes)
 
                     PrayerTimeCardView(prayer: .asr, time: timings.asr, isNext: viewModel.nextPrayer == .asr)
-                        .transition(.asymmetric(insertion: .move(edge: .leading).combined(with: .opacity), removal: .opacity))
+                        .transition(.asymmetric(insertion: .opacity.combined(with: .scale(scale: 0.8)), removal: .opacity))
+                        .animation(.easeInOut(duration: 0.6).delay(0.3), value: viewModel.prayerTimes)
 
                     PrayerTimeCardView(prayer: .maghrib, time: timings.maghrib, isNext: viewModel.nextPrayer == .maghrib)
-                        .transition(.asymmetric(insertion: .move(edge: .trailing).combined(with: .opacity), removal: .opacity))
+                        .transition(.asymmetric(insertion: .opacity.combined(with: .scale(scale: 0.8)), removal: .opacity))
+                        .animation(.easeInOut(duration: 0.6).delay(0.4), value: viewModel.prayerTimes)
 
                     PrayerTimeCardView(prayer: .isha, time: timings.isha, isNext: viewModel.nextPrayer == .isha)
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                        .transition(.asymmetric(insertion: .opacity.combined(with: .scale(scale: 0.8)), removal: .opacity))
+                        .animation(.easeInOut(duration: 0.6).delay(0.5), value: viewModel.prayerTimes)
                 }
             } else if viewModel.isLoading {
                 ForEach(0..<5, id: \.self) { index in
@@ -221,7 +222,7 @@ struct PrayerTimesView: View {
             }
         }
     }
-
+    
     private var refreshButton: some View {
         Button(action: {
             withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
@@ -233,7 +234,7 @@ struct PrayerTimesView: View {
                 Image(systemName: "arrow.clockwise")
                     .font(.system(size: 18, weight: .medium))
                     .rotationEffect(.degrees(refreshRotation))
-
+                
                 Text("Refresh Prayer Times")
                     .font(.headline)
                     .fontWeight(.semibold)
@@ -241,15 +242,13 @@ struct PrayerTimesView: View {
             .foregroundColor(.white)
             .frame(maxWidth: .infinity)
             .frame(height: 50)
-            .background(
-                LinearGradient(
-                    colors: [.blue, .purple],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            )
+            .background(Color.blue)
             .clipShape(RoundedRectangle(cornerRadius: 16))
-            .shadow(color: .blue.opacity(0.3), radius: 8, x: 0, y: 4)
+            .shadow(color: Color.blue.opacity(0.3), radius: 6, x: 0, y: 3)
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(Color.blue.opacity(0.3), lineWidth: 1)
+            )
             .scaleEffect(viewModel.isLoading ? 0.95 : 1.0)
             .opacity(viewModel.isLoading ? 0.7 : 1.0)
             .animation(.spring(response: 0.4, dampingFraction: 0.8), value: viewModel.isLoading)
@@ -257,31 +256,24 @@ struct PrayerTimesView: View {
         .disabled(viewModel.isLoading)
         .buttonStyle(ScaleButtonStyle())
     }
-
+    
     private var settingsButton: some View {
         Button(action: {
             showSettings = true
         }) {
             ZStack {
                 Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [.blue.opacity(0.1), .purple.opacity(0.05)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
+                    .fill(Color.blue.opacity(0.1))
                     .frame(width: 35, height: 35)
-
+                    .shadow(color: Color.blue.opacity(0.2), radius: 3, x: 0, y: 2)
+                    .overlay(
+                        Circle()
+                            .stroke(Color.blue.opacity(0.2), lineWidth: 1)
+                    )
+                
                 Image(systemName: "gearshape.fill")
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [.blue, .purple],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
+                    .foregroundColor(.blue)
             }
         }
         .buttonStyle(ScaleButtonStyle())

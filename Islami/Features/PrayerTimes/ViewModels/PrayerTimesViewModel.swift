@@ -29,13 +29,10 @@ class PrayerTimesViewModel: NSObject, ObservableObject {
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         
-        // Check current authorization status
         switch locationManager.authorizationStatus {
         case .authorizedWhenInUse, .authorizedAlways:
-            // Already authorized, request location immediately
             locationManager.requestLocation()
         case .notDetermined:
-            // Request permission, location will be fetched in delegate method
             locationManager.requestWhenInUseAuthorization()
         case .denied, .restricted:
             errorMessage = "Location access is required for prayer times"
@@ -44,7 +41,6 @@ class PrayerTimesViewModel: NSObject, ObservableObject {
         }
     }
     
-    // Add this delegate method to handle authorization changes
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         switch status {
         case .authorizedWhenInUse, .authorizedAlways:
@@ -57,10 +53,13 @@ class PrayerTimesViewModel: NSObject, ObservableObject {
     }
     
     func requestLocation() {
+        guard !isLoading else { return } // Prevent multiple simultaneous requests
         locationManager.requestLocation()
     }
     
     func fetchPrayerTimes(latitude: Double, longitude: Double) {
+        guard !isLoading else { return }
+        
         isLoading = true
         errorMessage = nil
         
@@ -72,17 +71,20 @@ class PrayerTimesViewModel: NSObject, ObservableObject {
                     method: selectedMethod
                 )
                 
-                prayerTimes = response.data.timings
-                hijriDate = "\(response.data.date.hijri.date) \(response.data.date.hijri.month.en)"
-                gregorianDate = response.data.date.readable
-                
-                updateNextPrayer()
+                await MainActor.run {
+                    prayerTimes = response.data.timings
+                    hijriDate = "\(response.data.date.hijri.date) \(response.data.date.hijri.month.en)"
+                    gregorianDate = response.data.date.readable
+                    updateNextPrayer()
+                    isLoading = false
+                }
                 
             } catch {
-                errorMessage = "Failed to fetch prayer times: \(error.localizedDescription)"
+                await MainActor.run {
+                    errorMessage = "Failed to fetch prayer times: \(error.localizedDescription)"
+                    isLoading = false
+                }
             }
-            
-            isLoading = false
         }
     }
     
@@ -93,16 +95,20 @@ class PrayerTimesViewModel: NSObject, ObservableObject {
             nextPrayer = next.prayer
             nextPrayerTime = next.time
         }
-        
         updateCountdown()
     }
     
     private func updateCountdown() {
+        guard !nextPrayerTime.isEmpty else {
+            timeUntilNext = "00:00:00"
+            return
+        }
         timeUntilNext = calculationService.timeUntilNextPrayer(nextPrayerTime: nextPrayerTime)
     }
     
     private func startTimer() {
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+        // Reduce timer frequency to reduce CPU usage
+        timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { _ in
             Task { @MainActor in
                 self.updateCountdown()
             }
@@ -126,5 +132,6 @@ extension PrayerTimesViewModel: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         errorMessage = "Failed to get location: \(error.localizedDescription)"
+        isLoading = false
     }
 }

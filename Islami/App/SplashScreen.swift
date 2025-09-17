@@ -10,7 +10,7 @@ import SwiftUI
 
 struct SplashScreen: View {
     @State private var isActive = false
-    @State private var logoScale = 0.5
+    @State private var logoScale = 0.3
     @State private var logoOpacity = 0.0
     @State private var textOffset = 50.0
     @State private var textOpacity = 0.0
@@ -71,34 +71,34 @@ struct SplashScreen: View {
                     .opacity(textOpacity)
                 }
                 .onAppear {
-                    // Animate logo
-                    withAnimation(.easeOut(duration: 0.8)) {
+                    // Animate logo with spring animation
+                    withAnimation(.spring(response: 0.8, dampingFraction: 0.6, blendDuration: 0.2)) {
                         logoScale = 1.0
                         logoOpacity = 1.0
                     }
                     
-                    // Rotate crescent
-                    withAnimation(.linear(duration: 2.0).repeatForever(autoreverses: false)) {
-                        crescentRotation = 15.0
+                    // Gentle crescent rotation
+                    withAnimation(.easeInOut(duration: 3.0).repeatForever(autoreverses: true)) {
+                        crescentRotation = 10.0
                     }
                     
-                    // Animate text after logo
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        withAnimation(.easeOut(duration: 0.6)) {
+                    // Animate text with spring animation
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                        withAnimation(.spring(response: 0.6, dampingFraction: 0.8, blendDuration: 0.1)) {
                             textOffset = 0.0
                             textOpacity = 1.0
                         }
                     }
                     
-                    // Fade to main content
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                        withAnimation(.easeInOut(duration: 0.8)) {
+                    // Smooth fade to main content
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
+                        withAnimation(.easeInOut(duration: 1.0)) {
                             backgroundOpacity = 0.0
                             logoOpacity = 0.0
                             textOpacity = 0.0
                         }
                         
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                             isActive = true
                         }
                     }

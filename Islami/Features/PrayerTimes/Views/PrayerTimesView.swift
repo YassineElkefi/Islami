@@ -57,7 +57,9 @@ struct PrayerTimesView: View {
                 }
             }
             .navigationTitle("Prayer Times")
-            .navigationBarItems(trailing: settingsButton)
+            .navigationBarItems(
+                leading: LanguageSelector(),
+                trailing: settingsButton)
             .sheet(isPresented: $showSettings) {
                 PrayerSettingsView(viewModel: viewModel, notificationViewModel: notificationViewModel)
             }

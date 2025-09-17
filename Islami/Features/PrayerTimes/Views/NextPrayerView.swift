@@ -15,6 +15,7 @@ struct NextPrayerView: View {
     
     @State private var pulseAnimation = false
     @State private var fadeIn = false
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         VStack(spacing: 16) {
@@ -179,12 +180,12 @@ struct NextPrayerView: View {
     
     private var backgroundView: some View {
         ZStack {
-            // Main gradient background
+            // Main gradient background - adaptive for dark mode
             LinearGradient(
                 colors: [
-                    Color.blue.opacity(0.1),
-                    Color.purple.opacity(0.05),
-                    Color.blue.opacity(0.08)
+                    Color.blue.opacity(colorScheme == .dark ? 0.15 : 0.1),
+                    Color.purple.opacity(colorScheme == .dark ? 0.08 : 0.05),
+                    Color.blue.opacity(colorScheme == .dark ? 0.12 : 0.08)
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
@@ -194,7 +195,10 @@ struct NextPrayerView: View {
             RoundedRectangle(cornerRadius: 20)
                 .fill(
                     RadialGradient(
-                        colors: [.white.opacity(0.1), .clear],
+                        colors: [
+                            Color.primary.opacity(colorScheme == .dark ? 0.05 : 0.1),
+                            Color.clear
+                        ],
                         center: .topLeading,
                         startRadius: 0,
                         endRadius: 200
@@ -204,12 +208,16 @@ struct NextPrayerView: View {
                 .animation(.easeInOut(duration: 3.0).repeatForever(autoreverses: true), value: pulseAnimation)
         }
     }
-    
+
     private var borderOverlay: some View {
         RoundedRectangle(cornerRadius: 20)
             .stroke(
                 LinearGradient(
-                    colors: [.blue.opacity(0.3), .purple.opacity(0.2), .blue.opacity(0.1)],
+                    colors: [
+                        Color.blue.opacity(colorScheme == .dark ? 0.4 : 0.3),
+                        Color.purple.opacity(colorScheme == .dark ? 0.3 : 0.2),
+                        Color.blue.opacity(colorScheme == .dark ? 0.15 : 0.1)
+                    ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 ),

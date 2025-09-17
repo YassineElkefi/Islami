@@ -15,6 +15,7 @@ struct PrayerSettingsView: View {
     @State private var animateContent = false
     @State private var pulseAnimation = false
     @State private var rotationAnimation = 0.0
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         NavigationView {
@@ -83,6 +84,65 @@ struct PrayerSettingsView: View {
         LinearGradient(
             colors: [
                 Color(.systemBackground),
+                Color.blue.opacity(colorScheme == .dark ? 0.05 : 0.02),
+                Color.purple.opacity(colorScheme == .dark ? 0.03 : 0.01),
+                Color(.systemBackground)
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        .ignoresSafeArea()
+        .opacity(animateContent ? 1.0 : 0.0)
+        .animation(.easeOut(duration: 1.0), value: animateContent)
+    }
+
+    private var cardBackground: some View {
+        ZStack {
+            LinearGradient(
+                colors: [
+                    colorScheme == .dark ? Color(.systemGray5) : Color(.systemGray6).opacity(0.8),
+                    colorScheme == .dark ? Color(.systemGray6) : Color(.systemGray5).opacity(0.3)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            
+            RoundedRectangle(cornerRadius: 16)
+                .fill(
+                    RadialGradient(
+                        colors: [
+                            Color.blue.opacity(colorScheme == .dark ? 0.1 : 0.05),
+                            Color.clear
+                        ],
+                        center: .topLeading,
+                        startRadius: 0,
+                        endRadius: 150
+                    )
+                )
+                .opacity(pulseAnimation ? 0.8 : 0.4)
+                .animation(.easeInOut(duration: 3.0).repeatForever(autoreverses: true), value: pulseAnimation)
+        }
+    }
+
+    private var cardBorder: some View {
+        RoundedRectangle(cornerRadius: 16)
+            .stroke(
+                LinearGradient(
+                    colors: [
+                        Color.blue.opacity(colorScheme == .dark ? 0.3 : 0.2),
+                        Color.purple.opacity(colorScheme == .dark ? 0.2 : 0.1)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                ),
+                lineWidth: 1.5
+            )
+    }
+    
+    /*private var backgroundGradient: some View {
+        LinearGradient(
+            colors: [
+                Color(.systemBackground),
                 Color.blue.opacity(0.02),
                 Color.purple.opacity(0.01),
                 Color(.systemBackground)
@@ -93,7 +153,7 @@ struct PrayerSettingsView: View {
         .ignoresSafeArea()
         .opacity(animateContent ? 1.0 : 0.0)
         .animation(.easeOut(duration: 1.0), value: animateContent)
-    }
+    }*/
     
     private var headerSection: some View {
         VStack(spacing: 12) {
@@ -351,7 +411,7 @@ struct PrayerSettingsView: View {
         }
     }
     
-    private var cardBackground: some View {
+    /*private var cardBackground: some View {
         ZStack {
             LinearGradient(
                 colors: [
@@ -386,7 +446,7 @@ struct PrayerSettingsView: View {
                 ),
                 lineWidth: 1.5
             )
-    }
+    }*/
 }
 
 struct AnimatedButtonStyle: ButtonStyle {

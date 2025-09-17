@@ -14,6 +14,7 @@ struct PrayerTimeCardView: View {
     
     @State private var isAnimating = false
     @State private var pulseEffect = false
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         VStack(spacing: 12) {
@@ -122,29 +123,13 @@ struct PrayerTimeCardView: View {
         }
     }
     
-    private var gradientBackground: LinearGradient {
-        if isNext {
-            return LinearGradient(
-                colors: [Color.blue.opacity(0.8), Color.indigo.opacity(0.6)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        } else {
-            return LinearGradient(
-                colors: [Color.gray.opacity(0.3), Color.gray.opacity(0.1)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        }
-    }
-    
     private var cardBackground: LinearGradient {
         if isNext {
             return LinearGradient(
                 colors: [
-                    Color.blue.opacity(0.05),
-                    Color.indigo.opacity(0.02),
-                    Color.white
+                    Color.blue.opacity(colorScheme == .dark ? 0.15 : 0.05),
+                    Color.indigo.opacity(colorScheme == .dark ? 0.08 : 0.02),
+                    colorScheme == .dark ? Color(.systemGray6) : Color.white
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
@@ -152,8 +137,30 @@ struct PrayerTimeCardView: View {
         } else {
             return LinearGradient(
                 colors: [
-                    Color.white,
-                    Color.gray.opacity(0.02)
+                    colorScheme == .dark ? Color(.systemGray6) : Color.white,
+                    Color.gray.opacity(colorScheme == .dark ? 0.05 : 0.02)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
+    }
+
+    private var gradientBackground: LinearGradient {
+        if isNext {
+            return LinearGradient(
+                colors: [
+                    Color.blue.opacity(colorScheme == .dark ? 0.9 : 0.8),
+                    Color.indigo.opacity(colorScheme == .dark ? 0.8 : 0.6)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        } else {
+            return LinearGradient(
+                colors: [
+                    Color.gray.opacity(colorScheme == .dark ? 0.4 : 0.3),
+                    Color.gray.opacity(colorScheme == .dark ? 0.2 : 0.1)
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing

@@ -4,7 +4,7 @@ import SwiftUI
 struct IslamiApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SplashScreen()
         }
     }
 }
